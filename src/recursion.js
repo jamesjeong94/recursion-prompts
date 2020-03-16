@@ -346,19 +346,17 @@ var rMap = function(array, callback) {
 // var obj = {'e':{'x':'y'},'t':{'r':{'e':'r'},'p':{'y':'r'}},'y':'e'};
 // countKeysInObj(obj, 'r') // 1
 // countKeysInObj(obj, 'e') // 2
-var countKeysInObj = function(obj, key) {
-    var countValuesInObj = function(obj, value) {
-        let acc = 0
-        if (typeof obj === "object"){
-            for(let key in obj){
-                acc += countValuesInObj(obj,value)
-                }
-            }
-        if (obj === value){
-          return 1
+var countKeysInObj = function(obj, target) {
+    let acc = 0
+    if (typeof obj === 'object'){
+        for (let key in obj){
+            acc += countKeysInObj(obj[key], target)
         }
-        return acc
-    };
+        if (Object.keys(obj)[0] === target){
+            acc += 1
+        }
+    }
+    return acc
 };
 
 // 23. Write a function that counts the number of times a value occurs in an object.
@@ -380,6 +378,19 @@ var countValuesInObj = function(obj, value) {
 // 24. Find all keys in an object (and nested objects) by a provided name and rename
 // them to a provided new name while preserving the value stored at that key.
 var replaceKeysInObj = function(obj, oldKey, newKey) {
+    let newObj = {}
+    if (typeof obj === 'object'){
+        for(let key in obj){
+            if(key === oldKey){
+                replaceKeysInObj()
+            }
+            else{
+                newObj[key] = obj[key]
+            }
+        }
+    }
+    console.log(newObj)
+    return newObj
 };
 
 // 25. Get the first n Fibonacci numbers. In the Fibonacci sequence, each subsequent
@@ -461,11 +472,34 @@ var nestedEvenSum = function(obj) {
 // 30. Flatten an array containing nested arrays.
 // flatten([1,[2],[3,[[4]]],5]); // [1,2,3,4,5]
 var flatten = function(array) {
+    let newArray = []
+    if(Array.isArray(array)){
+        for (let element of array){
+            if(Array.isArray(element)){
+                newArray.push(...flatten(element))
+            }
+            else{
+                newArray.push(element)
+            }
+        }
+    }
+    return newArray
 };
 
 // 31. Given a string, return an object containing tallies of each letter.
 // letterTally('potato'); // {p:1, o:2, t:2, a:1}
-var letterTally = function(str, obj) {
+var letterTally = function(str) {
+    let tally = {}
+    let strArray = str.split('')
+    for (let element of strArray){
+        if (tally[element] === undefined){
+            tally[element] = 1
+        }
+        else{
+            tally[element] ++
+        }
+    }
+    return tally
 };
 
 // 32. Eliminate consecutive duplicates in a list. If the list contains repeated
@@ -474,6 +508,10 @@ var letterTally = function(str, obj) {
 // compress([1,2,2,3,4,4,5,5,5]) // [1,2,3,4,5]
 // compress([1,2,2,3,4,4,2,5,5,5,4,4]) // [1,2,3,4,2,5,4]
 var compress = function(list) {
+    if (list.length === 1){
+        return list[0]
+    }
+    return list[0] + compress(list.slice(1))
 };
 
 // 33. Augment every element in a list with a new value where each element is an array
@@ -512,9 +550,21 @@ var tagCount = function(tag, node) {
 // var array = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
 // binarySearch(array, 5) // 5
 // https://www.khanacademy.org/computing/computer-science/algorithms/binary-search/a/binary-search
-var binarySearch = function(array, target, min, max) {
+var binarySearch = function(array, target) {
+    let newIndex = Math.floor(array.length/2)
+    if (array[array.length-1] < target || array[0] > target){
+      return null
+    }
+    if (array[newIndex] !== target){
+        if (array[newIndex] > target){
+            return binarySearch(array.slice(0,newIndex),target)
+        }
+        else{
+            return newIndex + binarySearch(array.slice(newIndex,),target)
+        }
+    }
+    return newIndex
 };
-
 // 39. Write a merge sort function.
 // mergeSort([34,7,23,32,5,62]) // [5,7,23,32,34,62]
 // https://www.khanacademy.org/computing/computer-science/algorithms/merge-sort/a/divide-and-conquer-algorithms
